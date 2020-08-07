@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 interface Client {
     @GET("check")
-    fun connectServer(): Call<Boolean>
+    fun connectServer(): Call<Void>
 
     @GET
     fun authorizeClient(): Call<Boolean>

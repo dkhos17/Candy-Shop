@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 "GET" -> {
                     sendResponse(exchange, "Welcome to my server")
                 }
-
             }
         }
 
