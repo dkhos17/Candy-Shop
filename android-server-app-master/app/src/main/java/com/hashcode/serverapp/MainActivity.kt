@@ -3,6 +3,7 @@ package com.hashcode.serverapp
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
+import androidx.room.Room
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
@@ -16,15 +17,17 @@ import java.util.concurrent.Executors
 
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var database: MyDatabase
     private var serverUp = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        database = Room.databaseBuilder(this, MyDatabase::class.java, "our_database")
+            .fallbackToDestructiveMigration()
+            .build()
         val port = 5000
-
         serverButton.setOnClickListener {
             serverUp = if(!serverUp){
                 startServer(port)
@@ -33,9 +36,7 @@ class MainActivity : AppCompatActivity() {
                 stopServer()
                 false
             }
-
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -43,8 +44,6 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
-
-
 
     private fun streamToString(inputStream: InputStream): String {
         val s = Scanner(inputStream).useDelimiter("\\A")
@@ -67,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             mHttpServer!!.executor = Executors.newCachedThreadPool()
 
             mHttpServer!!.createContext("/", rootHandler)
-            mHttpServer!!.createContext("/index", rootHandler)
+            mHttpServer!!.createContext("/check", connectionHandler)
             // Handle /messages endpoint
             mHttpServer!!.createContext("/messages", messageHandler)
             mHttpServer!!.start()//startServer server;
@@ -101,6 +100,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private val connectionHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "GET" -> {
+                    sendResponse(exchange, "")
+                }
+            }
+        }
+    }
+
     private val messageHandler = HttpHandler { httpExchange ->
         run {
             when (httpExchange!!.requestMethod) {
@@ -110,16 +120,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 "POST" -> {
                     val inputStream = httpExchange.requestBody
-
                     val requestBody = streamToString(inputStream)
                     val jsonBody = JSONObject(requestBody)
-                    // save message to database
-
                     //for testing
                     sendResponse(httpExchange, jsonBody.toString())
-
                 }
-
             }
         }
     }
