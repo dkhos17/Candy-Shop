@@ -10,9 +10,11 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:srcCompat="@drawable/JohnWick"
+        tools:srcCompat="@drawable/JohnWick" />
 
     <TextView
         android:id="@+id/name"

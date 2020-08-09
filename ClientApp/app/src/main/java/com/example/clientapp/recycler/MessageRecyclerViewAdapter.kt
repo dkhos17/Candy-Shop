@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
 import com.example.clientapp.models.Person
-import kotlinx.android.synthetic.main.viewholder.view.*
 
 class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
     private var data: List<Person>? = null
