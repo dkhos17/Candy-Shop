@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
             when (httpExchange!!.requestMethod) {
                 "GET" -> {
                     // Get all messages
+//                    database.getUserDao().getAllMessages()
                     sendResponse(httpExchange, "Would be all messages stringified json")
                 }
                 "POST" -> {

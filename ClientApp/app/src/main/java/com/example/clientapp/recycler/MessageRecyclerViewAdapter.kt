@@ -23,7 +23,6 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
 
     override fun onBindViewHolder(holder: MessageRecyclerViewHolder, position: Int) {
         if(data == null) return
-
 //        holder.itemView.icon. = data!![position].user.avatar
 //        holder.itemView.last_message.text = data!![position].messages.last().message
 //        holder.itemView.time.text = data!![position].messages.last().date.time.toString()

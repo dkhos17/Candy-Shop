@@ -13,8 +13,8 @@
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/JohnWick"
-        tools:srcCompat="@drawable/JohnWick" />
+        app:srcCompat="@drawable/johnwick"
+        tools:srcCompat="@drawable/johnwick" />
 
     <TextView
         android:id="@+id/name"

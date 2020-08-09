@@ -22,5 +22,13 @@
     <fragment
         android:id="@+id/messageFragment"
         android:name="com.example.clientapp.fragments.MessageFragment"
-        android:label="MessageFragment" />
+        android:label="MessageFragment" >
+        <action
+            android:id="@+id/action_messageFragment_to_chat"
+            app:destination="@id/chat" />
+    </fragment>
+    <fragment
+        android:id="@+id/chat"
+        android:name="com.example.clientapp.fragments.Chat"
+        android:label="Chat" />
 </navigation>
