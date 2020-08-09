@@ -14,5 +14,13 @@
     <fragment
         android:id="@+id/intro"
         android:name="com.example.clientapp.fragments.Intro"
-        android:label="Intro" />
+        android:label="Intro" >
+        <action
+            android:id="@+id/action_intro_to_messageFragment"
+            app:destination="@id/messageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.example.clientapp.fragments.MessageFragment"
+        android:label="MessageFragment" />
 </navigation>

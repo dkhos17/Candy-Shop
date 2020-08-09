@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.clientapp.R
 import java.lang.Exception
 
@@ -31,6 +33,10 @@ class Intro: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.introduce_yourself, container, false)
+        val view = inflater.inflate(R.layout.introduce_yourself, container, false)
+        view.findViewById<Button>(R.id.startButton).setOnClickListener {
+            findNavController().navigate(R.id.action_intro_to_messageFragment)
+        }
+        return view
     }
 }
