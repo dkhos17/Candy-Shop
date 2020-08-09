@@ -17,7 +17,7 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
 
     override fun getItemCount(): Int {
         if(data == null)
-            return 10
+            return 0
         return data!!.size
     }
 
@@ -31,6 +31,11 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
     fun setHistory(history: List<Person>) {
         data = history
         notifyDataSetChanged()
+    }
+
+    fun getHistory(): List<Person> {
+        if(data == null) return listOf()
+        return data as List<Person>
     }
 
 }

@@ -7,5 +7,5 @@ data class Message(
     var from: String,
     var to: String,
     var message: String?,
-    var date: Date
+    var time: String
 )
