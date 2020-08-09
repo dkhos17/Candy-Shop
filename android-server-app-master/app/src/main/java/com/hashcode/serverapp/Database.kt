@@ -58,14 +58,17 @@ interface UserDao {
     @Query("select * from users where nick = :nickname limit 1")
     fun getUser(nickname: String): User
 
+    @Query("select * from users")
+    fun getAllUsers(): List<User>
+
     @Query("select * from messages where `from` = :key")
-    fun getAllMessages(key: Int): List<Message>
+    fun getAllMessages(key: String): List<Message>
 
     @Query("select * from messages where (`from` = :from and `to` = :to) or (`from` = :to and `to` = :from) ")
-    fun getMessages(from: Int, to: Int): List<Message>
+    fun getMessages(from: String, to: String): List<Message>
 
     @Query("delete from messages where (`from` = :from and `to` = :to) or (`from` = :to and `to` = :from)")
-    fun deleteMessages(from: Int, to: Int)
+    fun deleteMessages(from: String, to: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(us: User)
