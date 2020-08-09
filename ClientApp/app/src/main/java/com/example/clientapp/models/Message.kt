@@ -4,8 +4,8 @@ import java.util.*
 
 data class Message(
     val id: Int,
-    var from: Int?,
-    var to: Int?,
+    var from: String,
+    var to: String,
     var message: String?,
     var date: Date
 )

@@ -14,11 +14,18 @@ import java.io.InputStream
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var database: MyDatabase
     private var serverUp = false
+
+
+    data class Person(
+        var user: User,
+        var messages: List<Message>
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,15 +122,23 @@ class MainActivity : AppCompatActivity() {
             when (httpExchange!!.requestMethod) {
                 "GET" -> {
                     // Get all messages
-//                    database.getUserDao().getAllMessages()
-                    sendResponse(httpExchange, "Would be all messages stringified json")
+                    val persons = ArrayList<Person>()
+                    val inputStream = httpExchange.requestBody
+                    val requestBody = streamToString(inputStream)
+                    val auth = JSONObject(requestBody) as String
+                    val users = database.getUserDao().getAllUsers()
+                    for (user in users ){
+                        val temp = database.getUserDao().getMessages(user.nick!!, auth)
+                        if (temp.isNotEmpty()) persons.add(Person(user, temp))
+                    }
+                    sendResponse(httpExchange, persons.toString())
                 }
                 "POST" -> {
                     val inputStream = httpExchange.requestBody
                     val requestBody = streamToString(inputStream)
-                    val jsonBody = JSONObject(requestBody)
+                    val jsonBody = JSONObject(requestBody) as String
                     //for testing
-                    sendResponse(httpExchange, jsonBody.toString())
+                    sendResponse(httpExchange, "")
                 }
             }
         }
