@@ -46,4 +46,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 }

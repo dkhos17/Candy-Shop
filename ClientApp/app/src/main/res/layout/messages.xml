@@ -10,16 +10,18 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
 
+        android:layout_width="match_parent"
         android:layout_height="192dp"
-        android:layout_width="match_parent">
+        android:background="@drawable/reverse_gradient">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:toolbarId="@+id/toolbar"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:background="@drawable/gradient"
+            app:contentScrim="@drawable/reverse_gradient"
 
-            app:contentScrim="?attr/colorPrimary">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:toolbarId="@+id/toolbar">
 
 
             <androidx.appcompat.widget.Toolbar
@@ -60,7 +62,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages"
+        android:id="@+id/messages_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"

@@ -1,7 +1,9 @@
 package com.example.clientapp.fragments
 
 import android.content.Context
+import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.SearchEvent
 import android.view.View
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
@@ -29,7 +32,7 @@ class MessageFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.messages, null)
-        val recycler = view.findViewById<RecyclerView>(R.id.messages)
+        val recycler = view.findViewById<RecyclerView>(R.id.messages_recyclerview)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = MessageRecyclerViewAdapter(findNavController())
         
@@ -68,7 +71,37 @@ class MessageFragment : Fragment(){
             }
         })
 
+        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(recycler)
+
         return view
     }
+
+    private var simpleCallback: ItemTouchHelper.SimpleCallback =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                if (direction == ItemTouchHelper.RIGHT){
+                    Log.d("swipeeeeeeeeeeeee","swipeeeeeeeeeee")
+//                    deletedMovie = moviesList.get(position)
+//                    moviesList.remove(position)
+//                    recyclerAdapter.notifyItemRemoved(position)
+//                    Snackbar.make(recyclerView, deletedMovie, Snackbar.LENGTH_LONG)
+//                        .setAction("Undo", View.OnClickListener {
+//                            moviesList.add(position, deletedMovie)
+//                            recyclerAdapter.notifyItemInserted(position)
+//                        }).show()
+                }
+            }
+
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX/6, dY, actionState, isCurrentlyActive)
+            }
+        }
 
 }
