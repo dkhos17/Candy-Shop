@@ -1,7 +1,10 @@
 package com.hashcode.serverapp
 
+import android.media.Image
+import android.widget.ImageView
 import androidx.room.*
 import java.io.Serializable
+import java.util.*
 
 
 @Entity(tableName = "users")
@@ -9,7 +12,8 @@ data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var nick: String?,
-    var todo: String = ""
+    var todo: String = "",
+    var avatar: Image
 ) : Serializable
 
 
@@ -22,7 +26,8 @@ data class Message(
     val id: Int = 0,
     var from: Int?,
     var to: Int?,
-    var message: String?
+    var message: String?,
+    var date: Date
 ) : Serializable
 
 @Dao

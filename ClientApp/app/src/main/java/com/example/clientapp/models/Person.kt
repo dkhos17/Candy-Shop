@@ -1,6 +1,6 @@
 package com.example.clientapp.models
 
 data class Person(
-    var nickname: String,
+    var user: User,
     var messages: List<Message>
 )
