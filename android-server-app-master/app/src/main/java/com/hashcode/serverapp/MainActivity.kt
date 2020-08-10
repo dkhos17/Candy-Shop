@@ -44,6 +44,19 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+
+
+//        database.getUserDao().insertUser((User(nick = "xose",todo = "raze", avatar = null)))
+//        database.getUserDao().insertUser((User(nick = "pertaxa",todo = "cypher", avatar = null)))
+//        database.getUserDao().insertUser((User(nick = "dito",todo = "jett", avatar = null)))
+//        database.getUserDao().insertUser((User(nick = "knubo",todo = "omen", avatar = null)))
+//        database.getUserDao().insertUser((User(nick = "vacnawt",todo = "sova", avatar = null)))
+//
+//        database.getUserDao().insertMessage(Message(from = "xose", to = "pertaxa", message = "synack", time = "12:00"))
+//        database.getUserDao().insertMessage(Message(from = "pertaxa", to = "xose", message = "ack", time = "12:01"))
+//        database.getUserDao().insertMessage(Message(from = "xose", to = "pertaxa", message = "ack", time = "12:02"))
+//        database.getUserDao().insertMessage(Message(from = "pertaxa", to = "xose", message = "what's up?", time = "12:03"))
+//        database.getUserDao().insertMessage(Message(from = "xose", to = "pertaxa", message = "cucushka", time = "12:04"))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

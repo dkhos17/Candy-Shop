@@ -27,7 +27,7 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person
 
     override fun getItemCount(): Int {
         if(person.messages == null)
-            return 10
+            return 0
         return person.messages!!.size
     }
 

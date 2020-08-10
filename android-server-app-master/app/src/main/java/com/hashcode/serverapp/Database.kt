@@ -8,8 +8,8 @@ import java.util.*
 data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    var nick: String?,
-    var todo: String = "",
+    var nick: String,
+    var todo: String,
     var avatar: ByteArray?
 
 ) : Serializable {
@@ -47,10 +47,10 @@ data class User(
 data class Message(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    var from: Int?,
-    var to: Int?,
-    var message: String?,
-    var date: String = ""
+    var from: String,
+    var to: String,
+    var message: String,
+    var time: String
 ) : Serializable
 
 @Dao

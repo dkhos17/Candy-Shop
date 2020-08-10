@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
+import com.example.clientapp.models.User
 import com.example.clientapp.recycler.ChatRecyclerViewAdapter
 import com.google.android.material.appbar.AppBarLayout
 import java.lang.Exception
@@ -56,6 +59,8 @@ class Chat:Fragment() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             try {
+                var x = requireArguments().getString("check")
+                Log.d("check", x)
                 person = requireArguments().getSerializable("person") as Person
             } catch (e: Exception){}
         }
@@ -100,6 +105,40 @@ class Chat:Fragment() {
         layout.reverseLayout = true
         layout.stackFromEnd = true
         recycler.layoutManager = layout
+        Log.d("check", "im here")
+
+        var list: MutableList<Message> = listOf<Message>().toMutableList()
+//        list.add(Message(0, "xose", "pertaxa", "synacksynasynacksynacksynacksynacksynacksynacksynacksynacksynackcksynacksynack", "12:00"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:01"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:02"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:03"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:04"))
+//
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:05"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:06"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:07"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:08"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:09"))
+//
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:20"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:21"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:22"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:32"))
+//
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:45"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:54"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:34"))
+//        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
+//        list.add(Message(0, "xose", "pertaxa", "synack", "12:24"))
+
+        list.add(Message(0, "xose", "pertaxa", "synack", "11:00"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "11:10"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:30"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:40"))
+        list.add(Message(0, "xose", "pertaxa", "bolo", "12:50"))
+
+        person = Person(User(nickname = "xose", avatar = null, whatIdo = "hm"), list)
         recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
 
         return view

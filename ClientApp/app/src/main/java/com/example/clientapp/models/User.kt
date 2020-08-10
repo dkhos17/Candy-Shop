@@ -6,6 +6,6 @@ import java.io.Serializable
 
 data class User(
     var nickname: String,
-    var avatar: Drawable,
+    var avatar: Drawable?,
     var whatIdo: String
 ) : Serializable
