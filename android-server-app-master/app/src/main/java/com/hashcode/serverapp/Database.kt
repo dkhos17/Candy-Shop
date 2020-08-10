@@ -56,7 +56,7 @@ data class Message(
 @Dao
 interface UserDao {
     @Query("select * from users where nick = :nickname limit 1")
-    fun getUser(nickname: String): User
+    fun getUser(nickname: String): User?
 
     @Query("select * from users")
     fun getAllUsers(): List<User>

@@ -62,7 +62,7 @@ class MessageFragment : Fragment(){
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 if(p0 != null && p0.length >= 3) {
                     var curr = (recycler.adapter as MessageRecyclerViewAdapter).getHistory()
-                    var new = curr.filter{ it.user.nickname.contains(p0, true) }
+                    var new = curr.filter{ it.user.nick.contains(p0, true) }
                     recycler.adapter = MessageRecyclerViewAdapter(findNavController())
                     (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<com.example.clientapp.models.Person>)
                 }

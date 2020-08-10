@@ -2,6 +2,7 @@ package com.hashcode.serverapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import androidx.room.Room
 import com.sun.net.httpserver.HttpExchange
@@ -12,6 +13,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
+import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -111,8 +113,19 @@ class MainActivity : AppCompatActivity() {
         run {
             // Get request method
             when (exchange!!.requestMethod) {
-                "GET" -> {
-                    sendResponse(exchange, "Welcome to my server")
+                "POST" -> {
+                    Log.d("shemodiiiiis", exchange.requestURI.query.toString())
+                    val usr = parser(exchange.requestURI.query.toString())
+
+//                    val key = JSONObject(requestBody) as User
+                    Log.d("shemodiiiiis", "aeeeeee")
+//                    val usr = database.getUserDao().getUser(key.nick)
+//                    if (usr == null || key.avatar != null) {
+//                        database.getUserDao().insertUser(key)
+//                    }
+//                    Log.d("aeeeee", key.toString())
+//                    Log.d("ueeeee", usr.toString())
+                    sendResponse(exchange, "")
                 }
             }
         }
@@ -155,5 +168,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun parser(query: String) : User{
+        val user = User(0,"","",ByteArray(0))
+        var key = 0
+        for (token in query.split("&")) {
+            val tok = token.split("=")
+            when (key) {
+                0 -> {
+                    user.nick = tok[1]
+                }
+                1 -> {
+                    user.todo = tok[1]
+                }
+                else -> {
+                    user.avatar = user.avatar?.plus(tok[1].toByte())
+                }
+            }
+            key += 1
+        }
+        return user
     }
 }

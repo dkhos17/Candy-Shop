@@ -102,35 +102,35 @@ class Chat:Fragment() {
 
         val recycler = view.findViewById<RecyclerView>(R.id.chatsRecyclerView)
         val layout = LinearLayoutManager(context)
-        layout.reverseLayout = true
+        layout.reverseLayout = false
         layout.stackFromEnd = true
         recycler.layoutManager = layout
         Log.d("check", "im here")
 
         var list: MutableList<Message> = listOf<Message>().toMutableList()
-//        list.add(Message(0, "xose", "pertaxa", "synacksynasynacksynacksynacksynacksynacksynacksynacksynacksynackcksynacksynack", "12:00"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:01"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:02"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:03"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:04"))
-//
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:05"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:06"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:07"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:08"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:09"))
-//
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:20"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:21"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:22"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:32"))
-//
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:45"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:54"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:34"))
-//        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
-//        list.add(Message(0, "xose", "pertaxa", "synack", "12:24"))
+        list.add(Message(0, "xose", "pertaxa", "synacksynasynacksynacksynacksynacksynacksynacksynacksynacksynackcksynacksynack", "12:00"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:01"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:02"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:03"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:04"))
+
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:05"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:06"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:07"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:08"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:09"))
+
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:20"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:21"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:22"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:32"))
+
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:45"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:54"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:34"))
+        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
+        list.add(Message(0, "xose", "pertaxa", "synack", "12:24"))
 
         list.add(Message(0, "xose", "pertaxa", "synack", "11:00"))
         list.add(Message(0, "pertaxa", "xose", "synack", "11:10"))
@@ -138,7 +138,7 @@ class Chat:Fragment() {
         list.add(Message(0, "pertaxa", "xose", "synack", "12:40"))
         list.add(Message(0, "xose", "pertaxa", "bolo", "12:50"))
 
-        person = Person(User(nickname = "xose", avatar = null, whatIdo = "hm"), list)
+        person = Person(User(nick = "xose", avatar = null, todo = "hm"), list)
         recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
 
         return view

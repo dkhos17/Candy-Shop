@@ -1,6 +1,5 @@
 package com.example.clientapp.network
 
-import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
 import retrofit2.Call
 import retrofit2.http.GET
@@ -11,8 +10,8 @@ interface Client {
     @GET("check")
     fun connectServer(): Call<Void>
 
-    @GET("/")
-    fun authorizeClient(@Query("key") nick: String): Call<Void>
+    @POST("/")
+    fun authorizeClient(@Query("nick") nick: String, @Query("todo") todo: String, @Query("avatar") avatar: ByteArray): Call<Void>
 
     @POST
     fun sendMessage(): Call<Boolean>

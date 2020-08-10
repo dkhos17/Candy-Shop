@@ -11,7 +11,7 @@ import com.example.clientapp.models.Person
 class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
-        if(person.messages?.get(position)?.from  == person.user.nickname) {
+        if(person.messages?.get(position)?.from  == person.user.nick) {
             return 1
         }
         return 0

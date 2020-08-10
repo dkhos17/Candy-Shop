@@ -1,8 +1,13 @@
 package com.example.clientapp.fragments
 
-import android.content.Context
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,20 +20,18 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.clientapp.R
-import com.example.clientapp.models.Person
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
-import com.example.clientapp.recycler.MessageRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+
 
 class Intro: Fragment() {
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
+    private val PICK_IMAGE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +52,17 @@ class Intro: Fragment() {
         val nick = view.findViewById<EditText>(R.id.editTextTextPersonName)
         val todo = view.findViewById<EditText>(R.id.editTextTextPersonName2)
         val imgView = view.findViewById<ImageView>(R.id.imageView)
-        val user = User(nick.text.toString(), imgView.drawable, todo.text.toString())
+        val bitmap = (imgView.drawable as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val imageInByte: ByteArray = baos.toByteArray()
+        val user = User(0, nick.text.toString(), todo.text.toString(), imageInByte)
         view.findViewById<Button>(R.id.startButton).setOnClickListener {
             val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
                 .addConverterFactory(GsonConverterFactory.create()).build()
             val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
-            clientService.authorizeClient(user.nickname!!).enqueue(object : Callback<Void> {
+            clientService.authorizeClient(nick.text.toString(), todo.text.toString(), imageInByte).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                     if(response.isSuccessful) {
                         val args = bundleOf("user" to user)
@@ -67,8 +74,36 @@ class Intro: Fragment() {
                     Log.d("connectserver", t.message!!)
                 }
             })
-
         }
+        imgView.setOnClickListener {
+            chooseImage()
+        }
+
         return view
+    }
+
+    private fun chooseImage() {
+        val intent = Intent()
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
+            val uri: Uri = data.data
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
+                val imageView: ImageView = activity?.findViewById(R.id.imageView) !!
+                imageView.setImageBitmap(bitmap)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 }
