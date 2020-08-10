@@ -17,7 +17,7 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
 
     override fun getItemCount(): Int {
         if(data == null)
-            return 0
+            return 10
         return data!!.size
     }
 
