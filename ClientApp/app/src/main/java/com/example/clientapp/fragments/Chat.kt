@@ -1,5 +1,6 @@
 package com.example.clientapp.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -16,14 +17,18 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.models.Person
+import com.example.clientapp.recycler.ChatRecyclerViewAdapter
 import com.google.android.material.appbar.AppBarLayout
 import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-class Chat :Fragment() {
+class Chat:Fragment() {
 
     private lateinit var ivUserAvatar: ImageView
     private var EXPAND_AVATAR_SIZE: Float = 0F
@@ -41,6 +46,8 @@ class Chat :Fragment() {
     private var avatarCollapseAnimationChangeWeight: Float = 0F
     private var isCalculated = false
     private var verticalToolbarAvatarMargin =0F
+    private lateinit var person : Person
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -49,6 +56,7 @@ class Chat :Fragment() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             try {
+                person = requireArguments().getSerializable("person") as Person
             } catch (e: Exception){}
         }
     }
@@ -86,6 +94,14 @@ class Chat :Fragment() {
                 /**/
                 updateViews(abs(i / appBarLayout.totalScrollRange.toFloat()))
             })
+
+        val recycler = view.findViewById<RecyclerView>(R.id.chatsRecyclerView)
+        val layout = LinearLayoutManager(context)
+        layout.reverseLayout = true
+        layout.stackFromEnd = true
+        recycler.layoutManager = layout
+        recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
+
         return view
     }
 
@@ -117,13 +133,13 @@ class Chat :Fragment() {
                             /* set avatar on start position (center of parent frame layout)*/
                             ivUserAvatar.translationX = 0F
                             /**/
-                            background.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.design_default_color_primary))
+                            background.setBackgroundColor(R.drawable.gradient)
                             /* hide top titles on toolbar*/
                             titleToolbarTextSingle.visibility = View.INVISIBLE
                         }
                         TO_COLLAPSED -> background.apply {
                             alpha = 0F
-                            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+                            setBackgroundColor(R.drawable.gradient)
                             animate().setDuration(250).alpha(1.0F)
 
                             /* show titles on toolbar with animation*/

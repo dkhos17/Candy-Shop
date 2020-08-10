@@ -6,12 +6,12 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
 import com.example.clientapp.models.Message
+import com.example.clientapp.models.Person
 
-class ChatRecyclerViewAdapter (val navigation: NavController, val owner: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var data: List<Message>? = null
+class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
-        if(data?.get(position)?.from  == owner) {
+        if(person.messages?.get(position)?.from  == person.user.nickname) {
             return 1
         }
         return 0
@@ -26,26 +26,20 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val owner: String)
     }
 
     override fun getItemCount(): Int {
-        if(data == null)
-            return 0
-        return data!!.size
+        if(person.messages == null)
+            return 10
+        return person.messages!!.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(data == null) return
+        if(person.messages == null) return
 
         if(getItemViewType(position) == 0) {
-            (holder as ChatRecyclerLeftViewHolder).message.text = data!![position].message
-            holder.time.text = data!![position].time
+            (holder as ChatRecyclerLeftViewHolder).message.text = person.messages!![position].message
+            holder.time.text = person.messages!![position].time
         } else {
-            (holder as ChatRecyclerRightViewHolder).message.text = data!![position].message
-            holder.time.text = data!![position].time
+            (holder as ChatRecyclerRightViewHolder).message.text = person.messages!![position].message
+            holder.time.text = person.messages!![position].time
         }
     }
-
-    fun setMessages(messages: List<Message>) {
-        data = messages
-        notifyDataSetChanged()
-    }
-
 }

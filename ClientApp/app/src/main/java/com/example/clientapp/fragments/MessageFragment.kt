@@ -1,5 +1,6 @@
 package com.example.clientapp.fragments
 
+import android.app.Person
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Bundle
@@ -61,7 +62,7 @@ class MessageFragment : Fragment(){
                     var curr = (recycler.adapter as MessageRecyclerViewAdapter).getHistory()
                     var new = curr.filter{ it.user.nickname.contains(p0, true) }
                     recycler.adapter = MessageRecyclerViewAdapter(findNavController())
-                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new)
+                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<com.example.clientapp.models.Person>)
                 }
                 return false
             }
