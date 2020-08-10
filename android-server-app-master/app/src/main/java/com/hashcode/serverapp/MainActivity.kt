@@ -5,15 +5,18 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import androidx.room.Room
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.InetSocketAddress
-import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -114,17 +117,16 @@ class MainActivity : AppCompatActivity() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "POST" -> {
+                    Log.d("shemodiiiiis", "")
                     Log.d("shemodiiiiis", exchange.requestURI.query.toString())
-                    val usr = parser(exchange.requestURI.query.toString())
 
-//                    val key = JSONObject(requestBody) as User
-                    Log.d("shemodiiiiis", "aeeeeee")
-//                    val usr = database.getUserDao().getUser(key.nick)
-//                    if (usr == null || key.avatar != null) {
-//                        database.getUserDao().insertUser(key)
-//                    }
-//                    Log.d("aeeeee", key.toString())
-//                    Log.d("ueeeee", usr.toString())
+                    val ISR = InputStreamReader(exchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<ArrayList<User?>?>() {}.type
+                    val yourClassList: List<User> = Gson().fromJson(jsonArray, listType)
+
+                    Log.d("shemodiiiiis",yourClassList.toString())
+
                     sendResponse(exchange, "")
                 }
             }

@@ -62,7 +62,7 @@ class Intro: Fragment() {
                 .addConverterFactory(GsonConverterFactory.create()).build()
             val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
-            clientService.authorizeClient(nick.text.toString(), todo.text.toString(), imageInByte).enqueue(object : Callback<Void> {
+            clientService.authorizeClient(user).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                     if(response.isSuccessful) {
                         val args = bundleOf("user" to user)

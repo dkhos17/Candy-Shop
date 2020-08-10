@@ -5,14 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:src="@drawable/neo"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_width="1.5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:srcCompat="@drawable/johnwick"
         tools:srcCompat="@tools:sample/avatars" />
 
     <EditText
@@ -20,13 +24,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="#FFFFFF"
+        android:background="@drawable/custom_shape_light"
         android:ems="10"
-        android:fontFamily="monospace"
+        android:fontFamily="casual"
         android:hint="Enter your nickname"
         android:inputType="textPersonName"
+        android:lineSpacingExtra="6dp"
+        android:padding="6dp"
         android:textAlignment="center"
-        android:textSize="22sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -36,13 +42,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="#00FFFFFF"
+        android:background="@drawable/custom_shape_light"
         android:ems="10"
-        android:fontFamily="monospace"
-        android:hint="What i do"
+        android:fontFamily="casual"
+        android:hint="what i do"
         android:inputType="textPersonName"
+        android:lineSpacingExtra="6dp"
+        android:padding="6dp"
         android:textAlignment="center"
-        android:textSize="22sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
@@ -59,7 +67,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:background="@drawable/custom_shape"
+        android:fontFamily="casual"
         android:text="Start"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />

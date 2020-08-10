@@ -39,7 +39,7 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/top_head_height"
-            android:background="@drawable/gradient"
+            android:background="@drawable/chat_gradient"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <FrameLayout
@@ -90,7 +90,7 @@
                 tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_workaround"
+                android:id="@+id/chat_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="center_horizontal"
@@ -107,7 +107,7 @@
                 tools:visibility="invisible" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_profile_name"
+                android:id="@+id/chat_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -124,10 +124,11 @@
                 tools:visibility="visible" />
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imgb_avatar_wrap"
-                android:layout_width="@dimen/default_expanded_image_size"
-                android:layout_height="@dimen/default_expanded_image_size"
+                android:id="@+id/chat_avatar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginStart="100dp"
                 android:src="@drawable/johnwick"
                 app:civ_border_color="@color/color_white"
                 app:civ_border_width="1.5dp" />
@@ -161,6 +162,7 @@
             android:background="@drawable/circle_shape" />
 
         <EditText
+            android:id="@+id/messageText"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/custom_shape_light"

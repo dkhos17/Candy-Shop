@@ -1,6 +1,5 @@
 package com.example.clientapp.fragments
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -9,13 +8,11 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,11 +77,11 @@ class Chat:Fragment() {
         /* collapsingAvatarContainer = findViewById(R.id.stuff_container)*/
         appBarLayout = view.findViewById(R.id.app_bar_layout)
         toolbar = view.findViewById(R.id.anim_toolbar)
-        ivUserAvatar = view.findViewById(R.id.imgb_avatar_wrap)
-        titleToolbarText = view.findViewById(R.id.tv_profile_name)
+        ivUserAvatar = view.findViewById(R.id.chat_avatar)
+        titleToolbarText = view.findViewById(R.id.chat_detail)
         titleToolbarTextSingle = view.findViewById(R.id.tv_profile_name_single)
         background = view.findViewById(R.id.fl_background)
-        invisibleTextViewWorkAround = view.findViewById(R.id.tv_workaround)
+        invisibleTextViewWorkAround = view.findViewById(R.id.chat_nickname)
 
         (toolbar.height - COLLAPSE_IMAGE_SIZE) * 2
         /**/
