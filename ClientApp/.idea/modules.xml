@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Candy-Shop-ClientApp.iml" filepath="$PROJECT_DIR$/.idea/modules/Candy-Shop-ClientApp.iml" group="ClientApp" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ClientApp.iml" filepath="$PROJECT_DIR$/.idea/ClientApp.iml" group="ClientApp" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ClientApp-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ClientApp-app.iml" group="ClientApp/app" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="ClientApp/app" />

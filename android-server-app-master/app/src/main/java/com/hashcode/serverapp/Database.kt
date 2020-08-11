@@ -4,10 +4,11 @@ import androidx.room.*
 import java.io.Serializable
 import java.util.*
 
-@Entity(tableName = "users")
+@Entity(tableName = "users", indices = [Index(value = ["nick"], unique = true)])
 data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    @ColumnInfo(name = "nick")
     var nick: String,
     var todo: String,
     var avatar: ByteArray?
@@ -70,7 +71,7 @@ interface UserDao {
     @Query("delete from messages where (`from` = :from and `to` = :to) or (`from` = :to and `to` = :from)")
     fun deleteMessages(from: String, to: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertUser(us: User)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

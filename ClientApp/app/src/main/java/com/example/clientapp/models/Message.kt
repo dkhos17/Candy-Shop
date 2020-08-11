@@ -1,5 +1,6 @@
 package com.example.clientapp.models
 
+import java.io.Serializable
 import java.util.*
 
 data class Message(
@@ -8,4 +9,4 @@ data class Message(
     var to: String,
     var message: String?,
     var time: String
-)
+) : Serializable
