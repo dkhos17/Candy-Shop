@@ -3,7 +3,6 @@ package com.example.clientapp.fragments
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +37,9 @@ class Chat:Fragment() {
     private lateinit var appBarLayout: AppBarLayout
     private var cashCollapseState: Pair<Int, Int>? = null
     private lateinit var titleToolbarText: AppCompatTextView
+    private lateinit var titleToolbarText2: AppCompatTextView
     private lateinit var titleToolbarTextSingle: AppCompatTextView
+    private lateinit var titleToolbarTextSingle2: AppCompatTextView
     private lateinit var invisibleTextViewWorkAround: AppCompatTextView
     private lateinit var background: FrameLayout
     /**/
@@ -47,6 +48,7 @@ class Chat:Fragment() {
     private var isCalculated = false
     private var verticalToolbarAvatarMargin =0F
     private lateinit var person : Person
+    private lateinit var whatido: AppCompatTextView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -56,8 +58,6 @@ class Chat:Fragment() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             try {
-                var x = requireArguments().getString("check")
-                Log.d("check", x)
                 person = requireArguments().getSerializable("person") as Person
             } catch (e: Exception){}
         }
@@ -79,9 +79,17 @@ class Chat:Fragment() {
         toolbar = view.findViewById(R.id.anim_toolbar)
         ivUserAvatar = view.findViewById(R.id.chat_avatar)
         titleToolbarText = view.findViewById(R.id.chat_detail)
-        titleToolbarTextSingle = view.findViewById(R.id.tv_profile_name_single)
+        titleToolbarText2 = view.findViewById(R.id.chat_detail2)
+        titleToolbarTextSingle = view.findViewById(R.id.collapsed_chat_detail)
+        titleToolbarTextSingle2 = view.findViewById(R.id.collapsed_chat_detail2)
         background = view.findViewById(R.id.fl_background)
-        invisibleTextViewWorkAround = view.findViewById(R.id.chat_nickname)
+        invisibleTextViewWorkAround = view.findViewById(R.id.chat_invisible)
+
+        titleToolbarText.text = person.user.nick
+        titleToolbarText2.text = person.user.todo
+
+        titleToolbarTextSingle.text = person.user.nick
+        titleToolbarTextSingle2.text = person.user.todo
 
         (toolbar.height - COLLAPSE_IMAGE_SIZE) * 2
         /**/
@@ -102,7 +110,6 @@ class Chat:Fragment() {
         layout.reverseLayout = false
         layout.stackFromEnd = true
         recycler.layoutManager = layout
-        Log.d("check", "im here")
 
         var list: MutableList<Message> = listOf<Message>().toMutableList()
         list.add(Message(0, "xose", "pertaxa", "synacksynasynacksynacksynacksynacksynacksynacksynacksynacksynackcksynacksynack", "12:00"))
@@ -149,10 +156,15 @@ class Chat:Fragment() {
                     if (visibility != View.VISIBLE) visibility = View.VISIBLE
                     alpha = (1 - offset) * 0.35F
                 }
+                titleToolbarText2.apply {
+                    if (visibility != View.VISIBLE) visibility = View.VISIBLE
+                    alpha = (1 - offset) * 0.35F
+                }
             }
 
             in 0F..0.15F -> {
                 titleToolbarText.alpha = (1f)
+                titleToolbarText2.alpha = (1f)
                 ivUserAvatar.alpha = 1f
             }
         }
@@ -172,6 +184,7 @@ class Chat:Fragment() {
                             background.setBackgroundColor(R.drawable.gradient)
                             /* hide top titles on toolbar*/
                             titleToolbarTextSingle.visibility = View.INVISIBLE
+                            titleToolbarTextSingle2.visibility = View.INVISIBLE
                         }
                         TO_COLLAPSED -> background.apply {
                             alpha = 0F
@@ -180,6 +193,12 @@ class Chat:Fragment() {
 
                             /* show titles on toolbar with animation*/
                             titleToolbarTextSingle.apply {
+                                visibility = View.VISIBLE
+                                alpha = 0F
+                                animate().setDuration(500).alpha(1.0f)
+                            }
+
+                            titleToolbarTextSingle2.apply {
                                 visibility = View.VISIBLE
                                 alpha = 0F
                                 animate().setDuration(500).alpha(1.0f)

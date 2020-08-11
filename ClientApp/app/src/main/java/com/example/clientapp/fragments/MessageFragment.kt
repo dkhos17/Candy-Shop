@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -46,8 +47,11 @@ class MessageFragment : Fragment(){
         var view = inflater.inflate(R.layout.messages, null)
         recycler = view.findViewById(R.id.messages_recyclerview)
         recycler.layoutManager = LinearLayoutManager(context)
-        recycler.adapter = MessageRecyclerViewAdapter(findNavController())
-        
+
+        val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
+        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry)
+
+
         val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
             .addConverterFactory(GsonConverterFactory.create()).build()
         val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
@@ -56,6 +60,7 @@ class MessageFragment : Fragment(){
             override fun onResponse(call: Call<List<Person>>, response: retrofit2.Response<List<Person>>) {
                 if(response.isSuccessful) {
                     response.body()?.let {
+                        Log.d("response", it.toString())
                         list = it
                         (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter { person -> person.messages.isNotEmpty()} as MutableList<Person>)
                     }

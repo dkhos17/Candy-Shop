@@ -51,7 +51,9 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/background_Image_tint" />
+                    android:background="@color/background_Image_tint" >
+
+                </FrameLayout>
             </FrameLayout>
 
 
@@ -70,18 +72,19 @@
                 android:visibility="invisible"
                 app:layout_collapseMode="pin" />
 
+
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_profile_name_single"
+                android:id="@+id/collapsed_chat_detail"
                 android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="34dp"
                 android:layout_gravity="left"
+                android:layout_marginStart="50dp"
                 android:ellipsize="end"
                 android:fontFamily="monospace"
                 android:gravity="center"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Cristianaaa"
-                android:layout_marginStart="50dp"
+                android:text="john wick"
                 android:textAllCaps="true"
                 android:textColor="@color/color_white"
                 android:textSize="17sp"
@@ -90,10 +93,29 @@
                 app:layout_collapseMode="pin"
                 tools:visibility="visible" />
 
-
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/collapsed_chat_detail2"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_gravity="left"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="30dp"
+                android:ellipsize="end"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="killer"
+                android:textAllCaps="true"
+                android:textColor="@color/color_white"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                app:layout_collapseMode="pin"
+                tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/chat_nickname"
+                android:id="@+id/chat_invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="center_horizontal"
@@ -120,14 +142,14 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:scrollHorizontally="true"
-                android:text="philib bale"
+                android:text="John Wick"
                 android:textAllCaps="true"
                 android:textColor="@color/color_white"
                 android:textSize="24sp"
                 tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/todoCompatText"
+                android:id="@+id/chat_detail2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|left"
@@ -137,7 +159,7 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:scrollHorizontally="true"
-                android:text="what i do"
+                android:text="killer"
                 android:textAllCaps="true"
                 android:textColor="@color/color_white"
                 android:textSize="13sp"
@@ -194,5 +216,12 @@
             android:textSize="14sp" />
 
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/ic_baseline_arrow_back_ios_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

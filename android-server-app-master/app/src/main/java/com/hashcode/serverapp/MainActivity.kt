@@ -1,6 +1,7 @@
 package com.hashcode.serverapp
 
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -117,14 +118,18 @@ class MainActivity : AppCompatActivity() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "POST" -> {
+                    Log.d("DB", database.getUserDao().getAllUsers().toString())
+
                     val ISR = InputStreamReader(exchange.requestBody, "utf-8")
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
                     val listType = object : TypeToken<User?>() {}.type
                     val usr: User = Gson().fromJson(jsonArray, listType)
                     val datUsr = database.getUserDao().getUser(usr.nick)
-                    if (datUsr == null || usr.avatar != null){
+                    if (datUsr == null){
                         database.getUserDao().insertUser(usr)
                     }
+                    Log.d("DB", database.getUserDao().getAllUsers().toString())
+
                     sendResponse(exchange, "")
                 }
             }

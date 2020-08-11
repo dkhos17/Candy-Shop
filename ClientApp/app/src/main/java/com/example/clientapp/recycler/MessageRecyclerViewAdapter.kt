@@ -2,12 +2,14 @@ package com.example.clientapp.recycler
 
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
@@ -18,7 +20,7 @@ import com.example.clientapp.R
 import com.example.clientapp.models.Person
 import com.google.android.material.snackbar.Snackbar
 
-class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
+class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
     private var data: MutableList<Person>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageRecyclerViewHolder {
@@ -26,8 +28,14 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
     }
 
     override fun getItemCount(): Int {
-        if(data == null)
+        if(data == null || data!!.isEmpty()) {
+            emptyHistory.visibility = View.VISIBLE
+        } else {
+            emptyHistory.visibility = View.INVISIBLE
+        }
+        if(data == null) {
             return 0
+        }
         return data!!.size
     }
 
@@ -43,8 +51,7 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
         }
         holder.nickname.text = data!![position].user.nick
         holder.itemView.setOnClickListener {
-            val bndl = Bundle() //bundleOf("person" to data!![position])
-            bndl.putString("check","got it")
+            val bndl = bundleOf("person" to data!![position])
             navigation.navigate(R.id.action_messageFragment_to_chat, bndl)
         }
     }
