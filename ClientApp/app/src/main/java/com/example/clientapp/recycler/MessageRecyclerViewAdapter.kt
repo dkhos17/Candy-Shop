@@ -1,11 +1,13 @@
 package com.example.clientapp.recycler
 
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
@@ -25,15 +27,21 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
 
     override fun getItemCount(): Int {
         if(data == null)
-            return 10
+            return 0
         return data!!.size
     }
 
     override fun onBindViewHolder(holder: MessageRecyclerViewHolder, position: Int) {
-//        if(data == null) return
-//        holder.itemView.icon. = data!![position].user.avatar
-//        holder.itemView.last_message.text = data!![position].messages.last().message
-//        holder.itemView.time.text = data!![position].messages.last().date.time.toString()
+        if(data == null) return
+        val bt = data!![position].user.avatar
+        if (bt != null) {
+            holder.avatar.setImageBitmap(BitmapFactory.decodeByteArray(bt, 0, bt.size))
+        }
+        if(data!![position].messages.isNotEmpty()){
+            holder.message.text = data!![position].messages.last().message
+            holder.time.text = data!![position].messages.last().time
+        }
+        holder.nickname.text = data!![position].user.nick
         holder.itemView.setOnClickListener {
             val bndl = Bundle() //bundleOf("person" to data!![position])
             bndl.putString("check","got it")
@@ -48,7 +56,7 @@ class MessageRecyclerViewAdapter(val navigation: NavController) : RecyclerView.A
     }
 
     fun setHistory(history: MutableList<Person>) {
-        if(data == null) return
+        if(history == null) return
         data = history
         notifyDataSetChanged()
     }

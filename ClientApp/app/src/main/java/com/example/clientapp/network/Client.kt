@@ -18,6 +18,6 @@ interface Client {
     @POST
     fun sendMessage(): Call<Boolean>
 
-    @GET("messages")
-    fun getHistory(@Query("key") nick: String): Call<List<Person>>
+    @POST("messages")
+    fun getHistory(@Body nick: User): Call<List<Person>>
 }

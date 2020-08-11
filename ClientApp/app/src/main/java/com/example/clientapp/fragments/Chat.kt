@@ -205,7 +205,7 @@ class Chat:Fragment() {
                         }
                         invisibleTextViewWorkAround.setTextSize(TypedValue.COMPLEX_UNIT_PX, offset)
 
-                        this.translationX = ((appBarLayout.width - horizontalToolbarAvatarMargin - avatarSize) / 2) * avatarCollapseAnimateOffset
+                        this.translationX = ((appBarLayout.width - horizontalToolbarAvatarMargin - avatarSize) / 2) * avatarCollapseAnimateOffset / 3
                         this.translationY = ((toolbar.height  - verticalToolbarAvatarMargin - avatarSize ) / 2) * avatarCollapseAnimateOffset
                     }
                     else -> this.layoutParams.also {

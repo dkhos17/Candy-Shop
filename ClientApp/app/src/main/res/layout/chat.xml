@@ -74,13 +74,14 @@
                 android:id="@+id/tv_profile_name_single"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left"
                 android:ellipsize="end"
                 android:fontFamily="monospace"
                 android:gravity="center"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Cristianaaa"
+                android:layout_marginStart="50dp"
                 android:textAllCaps="true"
                 android:textColor="@color/color_white"
                 android:textSize="17sp"
@@ -88,6 +89,8 @@
                 android:visibility="invisible"
                 app:layout_collapseMode="pin"
                 tools:visibility="visible" />
+
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/chat_nickname"
@@ -110,7 +113,7 @@
                 android:id="@+id/chat_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="center|left"
                 android:layout_margin="@dimen/activity_margin"
                 android:ellipsize="marquee"
                 android:fontFamily="monospace"
@@ -123,10 +126,27 @@
                 android:textSize="24sp"
                 tools:visibility="visible" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/todoCompatText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|left"
+                android:layout_margin="@dimen/activity_margin"
+                android:ellipsize="marquee"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:maxLines="2"
+                android:scrollHorizontally="true"
+                android:text="what i do"
+                android:textAllCaps="true"
+                android:textColor="@color/color_white"
+                android:textSize="13sp"
+                tools:visibility="visible" />
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/chat_avatar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginStart="100dp"
                 android:src="@drawable/johnwick"

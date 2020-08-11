@@ -14,15 +14,22 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.models.Person
+import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
 import com.example.clientapp.recycler.MessageRecyclerViewAdapter
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.log
 
 
 class MessageFragment : Fragment(){
 
     lateinit var recycler: RecyclerView
+    lateinit var user :User
+    var list = listOf<Person>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -30,46 +37,50 @@ class MessageFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if (savedInstanceState == null){
+            user = requireArguments().getSerializable("user") as User
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.messages, null)
-        recycler = view.findViewById<RecyclerView>(R.id.messages_recyclerview)
+        recycler = view.findViewById(R.id.messages_recyclerview)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = MessageRecyclerViewAdapter(findNavController())
         
         val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
             .addConverterFactory(GsonConverterFactory.create()).build()
         val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
+        Log.d("shemo", user.toString())
+        clientService.getHistory(user).enqueue(object : Callback<List<Person>> {
+            override fun onResponse(call: Call<List<Person>>, response: retrofit2.Response<List<Person>>) {
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        list = it
+                        (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter { person -> person.messages.isNotEmpty()} as MutableList<Person>)
+                    }
+                }
+            }
 
-//        clientService.getHistory().enqueue(object : Callback<List<Person>> {
-//            override fun onResponse(call: Call<List<Person>>, response: retrofit2.Response<List<Person>>) {
-//                if(response.isSuccessful) {
-//                    response.body()?.let {
-////                        (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it)
-//                    }
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<List<Person>>, t: Throwable) {
-//                Log.d("connectserver", t.message!!)
-//            }
-//        })
+            override fun onFailure(call: Call<List<Person>>, t: Throwable) {
+                Log.d("connectserver", t.message!!)
+            }
+        })
 
         val search = view.findViewById<SearchView>(R.id.search)
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 if(p0 != null && p0.length >= 3) {
-                    var curr = (recycler.adapter as MessageRecyclerViewAdapter).getHistory()
-                    var new = curr.filter{ it.user.nick.contains(p0, true) }
-                    recycler.adapter = MessageRecyclerViewAdapter(findNavController())
-                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<com.example.clientapp.models.Person>)
+                    var new = list.filter{ it.user.nick.contains(p0, true) }
+                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<Person>)
                 }
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
+                if (p0 != null && p0.isEmpty()) {
+                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(list.filter { it.messages.isNotEmpty()} as MutableList<Person>)
+                }
                 return onQueryTextSubmit(p0)
             }
         })

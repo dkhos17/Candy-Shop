@@ -117,16 +117,14 @@ class MainActivity : AppCompatActivity() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "POST" -> {
-                    Log.d("shemodiiiiis", "")
-                    Log.d("shemodiiiiis", exchange.requestURI.query.toString())
-
                     val ISR = InputStreamReader(exchange.requestBody, "utf-8")
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
-                    val listType = object : TypeToken<ArrayList<User?>?>() {}.type
-                    val yourClassList: List<User> = Gson().fromJson(jsonArray, listType)
-
-                    Log.d("shemodiiiiis",yourClassList.toString())
-
+                    val listType = object : TypeToken<User?>() {}.type
+                    val usr: User = Gson().fromJson(jsonArray, listType)
+                    val datUsr = database.getUserDao().getUser(usr.nick)
+                    if (datUsr == null || usr.avatar != null){
+                        database.getUserDao().insertUser(usr)
+                    }
                     sendResponse(exchange, "")
                 }
             }
@@ -148,48 +146,23 @@ class MainActivity : AppCompatActivity() {
     private val messageHandler = HttpHandler { httpExchange ->
         run {
             when (httpExchange!!.requestMethod) {
-                "GET" -> {
-                    // Get all messages
-                    val persons = ArrayList<Person>()
-                    val inputStream = httpExchange.requestBody
-                    val requestBody = streamToString(inputStream)
-                    val auth = JSONObject(requestBody) as String
-                    val users = database.getUserDao().getAllUsers()
-                    for (user in users ){
-                        val temp = database.getUserDao().getMessages(user.nick!!, auth)
-                        if (temp.isNotEmpty()) persons.add(Person(user, temp))
-                    }
-                    sendResponse(httpExchange, persons.toString())
-                }
                 "POST" -> {
-                    val inputStream = httpExchange.requestBody
-                    val requestBody = streamToString(inputStream)
-                    val jsonBody = JSONObject(requestBody) as String
-                    //for testing
-                    sendResponse(httpExchange, "")
-                }
-            }
-        }
-    }
 
-    private fun parser(query: String) : User{
-        val user = User(0,"","",ByteArray(0))
-        var key = 0
-        for (token in query.split("&")) {
-            val tok = token.split("=")
-            when (key) {
-                0 -> {
-                    user.nick = tok[1]
-                }
-                1 -> {
-                    user.todo = tok[1]
-                }
-                else -> {
-                    user.avatar = user.avatar?.plus(tok[1].toByte())
+                    val persons = ArrayList<Person>()
+                    val ISR = InputStreamReader(httpExchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<User?>() {}.type
+                    val usr: User = Gson().fromJson(jsonArray, listType)
+
+                    val users = database.getUserDao().getAllUsers()
+                    for (user in users){
+                        val temp = database.getUserDao().getMessages(user.nick!!, usr.nick)
+                        persons.add(Person(user, temp))
+                    }
+                    //for testing
+                    sendResponse(httpExchange, Gson().toJson(persons))
                 }
             }
-            key += 1
         }
-        return user
     }
 }

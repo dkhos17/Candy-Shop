@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.clientapp.R
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -49,19 +50,23 @@ class Intro: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.introduce_yourself, container, false)
-        val nick = view.findViewById<EditText>(R.id.editTextTextPersonName)
-        val todo = view.findViewById<EditText>(R.id.editTextTextPersonName2)
+        val nick = view.findViewById<EditText>(R.id.enterNameText)
+        val todo = view.findViewById<EditText>(R.id.todoText)
         val imgView = view.findViewById<ImageView>(R.id.imageView)
         val bitmap = (imgView.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val imageInByte: ByteArray = baos.toByteArray()
-        val user = User(0, nick.text.toString(), todo.text.toString(), imageInByte)
         view.findViewById<Button>(R.id.startButton).setOnClickListener {
+            if(nick.text.toString().isEmpty() || todo.text.toString().isEmpty()){
+                val snack = Snackbar.make(it,"Fill all the information!",Snackbar.LENGTH_LONG)
+                snack.show()
+                return@setOnClickListener
+            }
+            val user = User(nick = nick.text.toString(), todo = todo.text.toString(), avatar = imageInByte)
             val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
                 .addConverterFactory(GsonConverterFactory.create()).build()
             val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
-
             clientService.authorizeClient(user).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                     if(response.isSuccessful) {
