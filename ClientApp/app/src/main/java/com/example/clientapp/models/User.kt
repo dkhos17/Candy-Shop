@@ -5,7 +5,7 @@ import android.media.Image
 import java.io.Serializable
 
 data class User(
-    val id: Int = 0,
+    var id: Int = 0,
     var nick: String,
     var todo: String,
     var avatar: ByteArray

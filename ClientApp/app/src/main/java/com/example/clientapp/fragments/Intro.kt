@@ -42,7 +42,8 @@ class Intro: Fragment() {
         val nick = view.findViewById<EditText>(R.id.enterNameText)
         val todo = view.findViewById<EditText>(R.id.todoText)
         val imgView = view.findViewById<ImageView>(R.id.imageView)
-
+        val bitmap = (imgView.drawable as BitmapDrawable).bitmap
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
         view.findViewById<Button>(R.id.startButton).setOnClickListener {
             if(nick.text.toString().isEmpty() || todo.text.toString().isEmpty()){
                 val snack = Snackbar.make(it,"Fill all the information!",Snackbar.LENGTH_LONG)
@@ -90,6 +91,7 @@ class Intro: Fragment() {
                 val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
                 val imageView: ImageView = activity?.findViewById(R.id.imageView) !!
                 imageView.setImageBitmap(bitmap)
+                baos.reset()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
             } catch (e: IOException) {
                 e.printStackTrace()

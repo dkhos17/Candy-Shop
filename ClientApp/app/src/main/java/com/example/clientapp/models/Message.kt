@@ -7,5 +7,5 @@ data class Message(
     var from: String,
     var to: String,
     var message: String,
-    var time: String
+    var date: Date
 ) : Serializable

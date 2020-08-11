@@ -1,32 +1,30 @@
 package com.example.clientapp.recycler
 
 import android.graphics.BitmapFactory
+import android.service.autofill.FillEventHistory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
 import com.example.clientapp.baseUrl
-import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
-import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
-class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
-    private var data: MutableList<Person>? = null
+class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User, val clientService: Client) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
+    private var data = mutableListOf<Person>()
+
     val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create()).build()
 
@@ -35,34 +33,31 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
     }
 
     override fun getItemCount(): Int {
-        if(data == null || data!!.isEmpty()) {
+        if(data.isEmpty()) {
             emptyHistory.visibility = View.VISIBLE
         } else {
             emptyHistory.visibility = View.INVISIBLE
         }
-        if(data == null) {
-            return 0
-        }
-        return data!!.size
+        return data.size
     }
 
     override fun onBindViewHolder(holder: MessageRecyclerViewHolder, position: Int) {
-        if(data == null) return
-        val bt = data!![position].user.avatar
-        if (bt != null) {
-            holder.avatar.setImageBitmap(BitmapFactory.decodeByteArray(bt, 0, bt.size))
+        val bt = data[position].user.avatar
+        holder.avatar.setImageBitmap(BitmapFactory.decodeByteArray(bt, 0, bt.size))
+        if(data[position].messages.isNotEmpty()){
+            holder.message.text = data[position].messages.last().message
+            holder.time.text = getTimeDiff(Calendar.getInstance().time, data[position].messages.last().date)
         }
-        if(data!![position].messages.isNotEmpty()){
-            holder.message.text = data!![position].messages.last().message
-            holder.time.text = data!![position].messages.last().time
-        }
-        holder.nickname.text = data!![position].user.nick
+        holder.nickname.text = data[position].user.nick
         holder.itemView.setOnClickListener {
-            val bndl = bundleOf("person" to data!![position])
+            val bndl = bundleOf("person" to data[position])
             bndl.putSerializable("me", user)
             navigation.navigate(R.id.action_messageFragment_to_chat, bndl)
         }
+
+        setLazyHistory(position)
     }
+
 
     fun deleteItem(position: Int) {
         if(data == null) return
@@ -82,16 +77,47 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
 
     }
 
+    fun setLazyHistory(position: Int) {
+        if(position+1 != data.size || data.size % 10 != 0)
+            return
+
+        var lazyUser = user
+        lazyUser.id = position
+        clientService.getLazyHistory(user).enqueue(object : Callback<List<Person>> {
+            override fun onResponse(call: Call<List<Person>>, response: Response<List<Person>>) {
+                if (response.isSuccessful) {
+                    Log.d("load", "lazydata")
+                    response.body()?.let {
+                        if(position == -1) data = (it as MutableList<Person>)
+                        else data.addAll(it as MutableList<Person>)
+                        notifyDataSetChanged()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Person>>, t: Throwable) {}
+        })
+    }
+
     fun setHistory(history: MutableList<Person>) {
-        if(history == null) return
         data = history
         notifyDataSetChanged()
     }
 
-    fun getHistory(): MutableList<Person> {
-        if(data == null)
-            return listOf<Person>().toMutableList()
-        return data!!
+    private fun getTimeDiff(date1: Date, date2: Date): String {
+        val diff: Long = date1.time - date2.time
+        val seconds = diff / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        var res = ""
+        if(hours < 10) res += "0"
+        res += hours.toString()
+        res += ":"
+        if(minutes < 10) res += "0"
+        res += minutes.toString()
+
+        return res
     }
 
 }

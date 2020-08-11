@@ -20,7 +20,10 @@ interface Client {
     fun sendMessage(@Body message: Message): Call<Void>
 
     @POST("messages")
-    fun getHistory(@Body nick: User): Call<List<Person>>
+    fun getLazyHistory(@Body nick: User): Call<List<Person>>
+
+    @POST("search")
+    fun searchUser(@Body nick: Pair<String, String>): Call<List<Person>>
 
     @POST("chat")
     fun getMessages(@Body nick: Pair<User, User>): Call<List<Message>>

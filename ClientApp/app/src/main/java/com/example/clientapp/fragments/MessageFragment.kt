@@ -1,6 +1,5 @@
 package com.example.clientapp.fragments
 
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -29,7 +28,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.concurrent.fixedRateTimer
 
 
 class MessageFragment : Fragment() {
@@ -60,43 +58,36 @@ class MessageFragment : Fragment() {
         colorDrawableBackground = ColorDrawable(Color.parseColor("#FFE91E63"))
 
         val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
-        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user)
+        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user, clientService)
+        (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
 
-        fixedRateTimer("timer", false, 0L, 3000) {
-            clientService.getHistory(user).enqueue(object : Callback<List<Person>> {
-                override fun onResponse(
-                    call: Call<List<Person>>,
-                    response: Response<List<Person>>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            if(list != it) {
-                                list = it
-                                (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter { person -> person.messages.isNotEmpty() && person.user.nick != user.nick } as MutableList<Person>)
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Person>>, t: Throwable) {
-                    Log.d("connectserver", t.message!!)
-                }
-            })
-        }
 
         val search = view.findViewById<SearchView>(R.id.search)
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                if(p0 != null && p0.length >= 3) {
-                    var new = list.filter{ it.user.nick.contains(p0, true) && it.user.nick != user.nick}
-                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<Person>)
+                Log.d(p0.toString(),"search")
+                if(p0 != null) {
+                    clientService.searchUser(Pair(p0!!, user.nick)).enqueue(object : Callback<List<Person>> {
+                        override fun onResponse(call: Call<List<Person>>, response: Response<List<Person>>) {
+                            if (response.isSuccessful) {
+                                Log.d("load", "search")
+                                response.body()?.let {
+                                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter{person -> person.user.nick != user.nick} as MutableList<Person>)
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<List<Person>>, t: Throwable) {}
+                    })
                 }
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
+                Log.d(p0.toString(),"search")
+
                 if (p0 != null && p0.isEmpty()) {
-                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(list.filter { it.messages.isNotEmpty() && it.user.nick != user.nick} as MutableList<Person>)
+                    (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
                 }
                 return onQueryTextSubmit(p0)
             }

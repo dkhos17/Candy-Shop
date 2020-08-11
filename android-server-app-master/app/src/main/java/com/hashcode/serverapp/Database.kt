@@ -1,7 +1,10 @@
 package com.hashcode.serverapp
 
 import androidx.room.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.Serializable
+import java.lang.reflect.Type
 import java.util.*
 
 @Entity(tableName = "users", indices = [Index(value = ["nick"], unique = true)])
@@ -48,8 +51,24 @@ data class Message(
     var from: String,
     var to: String,
     var message: String,
-    var time: String
+    var date: Date
 ) : Serializable
+
+class Converter {
+    @TypeConverter
+    fun stringToDate(data: String?): Date {
+        if (data == null) {
+            return Date()
+        }
+        val listType: Type = object : TypeToken<Date?>() {}.type
+        return Gson().fromJson(data, listType)
+    }
+
+    @TypeConverter
+    fun dateToString(someObjects: Date?): String {
+        return Gson().toJson(someObjects)
+    }
+}
 
 @Dao
 interface UserDao {
@@ -58,6 +77,12 @@ interface UserDao {
 
     @Query("select * from users")
     fun getAllUsers(): List<User>
+
+    @Query("select * from users where nick like :nickname")
+    fun searchUser(nickname: String): List<User>
+
+    @Query("select * from users limit 10 offset :offset")
+    fun getLimitUsers(offset: Int): List<User>
 
     @Query("select * from messages where `from` = :key")
     fun getAllMessages(key: String): List<Message>
@@ -77,6 +102,7 @@ interface UserDao {
 }
 
 @Database(entities = [User::class, Message::class], version = 1)
+@TypeConverters(Converter::class)
 abstract class MyDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
 }

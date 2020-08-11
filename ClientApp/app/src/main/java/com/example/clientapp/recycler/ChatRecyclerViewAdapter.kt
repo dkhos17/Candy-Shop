@@ -1,12 +1,15 @@
 package com.example.clientapp.recycler
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
 import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
+import java.util.*
 
 class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -31,20 +34,37 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person
         return person.messages!!.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(person.messages == null) return
 
         if(getItemViewType(position) == 0) {
             (holder as ChatRecyclerLeftViewHolder).message.text = person.messages!![position].message
-            holder.time.text = person.messages!![position].time
+            holder.time.text = getTimeDiff(Calendar.getInstance().time, person.messages!![position].date)
         } else {
             (holder as ChatRecyclerRightViewHolder).message.text = person.messages!![position].message
-            holder.time.text = person.messages!![position].time
+            holder.time.text = getTimeDiff(Calendar.getInstance().time, person.messages!![position].date)
         }
     }
 
     fun sendMessage(message: Message) {
         person.messages.add(message)
         notifyItemInserted(person.messages.size-1)
+    }
+
+    private fun getTimeDiff(date1: Date, date2: Date): String {
+        val diff: Long = date1.time - date2.time
+        val seconds = diff / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        var res = ""
+        if(hours < 10) res += "0"
+        res += hours.toString()
+        res += ":"
+        if(minutes < 10) res += "0"
+        res += minutes.toString()
+
+        return res
     }
 }

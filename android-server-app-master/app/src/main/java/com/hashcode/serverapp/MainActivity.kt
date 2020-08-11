@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
             mHttpServer!!.createContext("/chat", chatHandler)
             mHttpServer!!.createContext("/direct", directHandler)
             mHttpServer!!.createContext("/delete", deleteHandler)
+            mHttpServer!!.createContext("/search", searchHandler)
             mHttpServer!!.start()//startServer server;
             serverTextView.text = getString(R.string.server_running)
             serverButton.text = getString(R.string.stop_server)
@@ -158,7 +159,7 @@ class MainActivity : AppCompatActivity() {
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
                     val listType = object : TypeToken<User?>() {}.type
                     val usr: User = Gson().fromJson(jsonArray, listType)
-                    val users = database.getUserDao().getAllUsers()
+                    val users = database.getUserDao().getLimitUsers(usr.id)
                     for (user in users){
                         val temp = database.getUserDao().getMessages(user.nick!!, usr.nick)
                         persons.add(Person(user, temp))
@@ -212,6 +213,28 @@ class MainActivity : AppCompatActivity() {
                     val usr: Pair<User, User> = Gson().fromJson(jsonArray, listType)
                     database.getUserDao().deleteMessages(usr.first.nick, usr.second.nick)
                     sendResponse(exchange, "")
+                }
+            }
+        }
+
+    }
+
+    private val searchHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "POST" -> {
+                    val persons = ArrayList<Person>()
+                    val ISR = InputStreamReader(exchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<Pair<String, String>?>() {}.type
+                    val nicknames: Pair<String, String> = Gson().fromJson(jsonArray, listType)
+                    val users = database.getUserDao().searchUser("%${nicknames.first}%")
+                    for (user in users){
+                        val temp = database.getUserDao().getMessages(user.nick, nicknames.second)
+                        persons.add(Person(user, temp))
+                    }
+                    sendResponse(exchange, Gson().toJson(persons))
                 }
             }
         }

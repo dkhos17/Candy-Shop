@@ -37,8 +37,10 @@ import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
+import java.sql.Date
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -81,16 +83,13 @@ class Chat:Fragment() {
             try {
                 person = requireArguments().getSerializable("person") as Person
                 user = requireArguments().getSerializable("me") as User
+                Log.d("Bundle", person.toString() + user.toString())
             } catch (e: Exception){}
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.chat, container, false)
         /**/
         EXPAND_AVATAR_SIZE = resources.getDimension(R.dimen.default_expanded_image_size)
@@ -163,8 +162,7 @@ class Chat:Fragment() {
         }
 
         sendButton.setOnClickListener {
-            val mesigi = Message(from = user.nick, to = person.user.nick, message = mess.text.toString(), time = LocalDateTime.now().format(
-                DateTimeFormatter.ofPattern("hh:mm a")))
+            val mesigi = Message(from = user.nick, to = person.user.nick, message = mess.text.toString(), date = Calendar.getInstance().time)
             clientService.sendMessage(mesigi).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                     if(response.isSuccessful) {
