@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             mHttpServer!!.createContext("/check", connectionHandler)
             // Handle /messages endpoint
             mHttpServer!!.createContext("/messages", messageHandler)
+            mHttpServer!!.createContext("/direct", directHandler)
             mHttpServer!!.start()//startServer server;
             serverTextView.text = getString(R.string.server_running)
             serverButton.text = getString(R.string.stop_server)
@@ -153,16 +154,31 @@ class MainActivity : AppCompatActivity() {
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
                     val listType = object : TypeToken<User?>() {}.type
                     val usr: User = Gson().fromJson(jsonArray, listType)
-
                     val users = database.getUserDao().getAllUsers()
                     for (user in users){
                         val temp = database.getUserDao().getMessages(user.nick!!, usr.nick)
                         persons.add(Person(user, temp))
                     }
-                    //for testing
                     sendResponse(httpExchange, Gson().toJson(persons))
                 }
             }
         }
+    }
+
+    private val directHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "POST" -> {
+                    val ISR = InputStreamReader(exchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<User?>() {}.type
+                    val message: Message = Gson().fromJson(jsonArray, listType)
+                    database.getUserDao().insertMessage(message)
+                    sendResponse(exchange, "")
+                }
+            }
+        }
+
     }
 }
