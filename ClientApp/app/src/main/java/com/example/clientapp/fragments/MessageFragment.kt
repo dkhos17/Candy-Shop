@@ -1,6 +1,10 @@
 package com.example.clientapp.fragments
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -27,13 +32,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.concurrent.fixedRateTimer
 
 
-class MessageFragment : Fragment(){
+class MessageFragment : Fragment() {
 
     lateinit var recycler: RecyclerView
     lateinit var user :User
+    lateinit var deleteIcon: Drawable
+    lateinit var colorDrawableBackground: ColorDrawable
+
     var list = listOf<Person>()
-    val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create()).build()
+    val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build()
     val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,12 +52,15 @@ class MessageFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.messages, null)
+
         recycler = view.findViewById(R.id.messages_recyclerview)
         recycler.layoutManager = LinearLayoutManager(context)
 
+        deleteIcon = context?.let { ContextCompat.getDrawable(it, R.drawable.ic_baseline_close_24) }!!
+        colorDrawableBackground = ColorDrawable(Color.parseColor("#FFE91E63"))
+
         val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
         recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user)
-
 
         fixedRateTimer("timer", false, 0L, 3000) {
             clientService.getHistory(user).enqueue(object : Callback<List<Person>> {
@@ -98,6 +108,8 @@ class MessageFragment : Fragment(){
         return view
     }
 
+
+
     private var simpleCallback: ItemTouchHelper.SimpleCallback =
         object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
@@ -112,6 +124,31 @@ class MessageFragment : Fragment(){
                 }
             }
 
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+                val itemView = viewHolder.itemView
+                val iconMarginVertical = (viewHolder.itemView.height - deleteIcon.intrinsicHeight) / 2
+
+                if (dX > 0) {
+                    colorDrawableBackground.setBounds(itemView.left, itemView.top, dX.toInt(), itemView.bottom)
+                    deleteIcon.setBounds(itemView.left + iconMarginVertical, itemView.top + iconMarginVertical,
+                        itemView.left + iconMarginVertical + deleteIcon.intrinsicWidth, itemView.bottom - iconMarginVertical)
+                } else {
+                    colorDrawableBackground.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+                    deleteIcon.setBounds(itemView.right - iconMarginVertical - deleteIcon.intrinsicWidth, itemView.top + iconMarginVertical,
+                        itemView.right - iconMarginVertical, itemView.bottom - iconMarginVertical)
+                    deleteIcon.level = 0
+                }
+
+                colorDrawableBackground.draw(c)
+                c.save()
+
+                if (dX > 0) c.clipRect(itemView.left, itemView.top, dX.toInt(), itemView.bottom)
+                else c.clipRect(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+                deleteIcon.draw(c)
+                c.restore()
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
         }
 
 }

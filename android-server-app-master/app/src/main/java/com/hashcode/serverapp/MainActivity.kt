@@ -127,6 +127,7 @@ class MainActivity : AppCompatActivity() {
                     val usr: User = Gson().fromJson(jsonArray, listType)
                     val datUsr = database.getUserDao().getUser(usr.nick)
                     if (datUsr == null){
+                        Log.d("surati", usr.toString())
                         database.getUserDao().insertUser(usr)
                     }
                     sendResponse(exchange, "")

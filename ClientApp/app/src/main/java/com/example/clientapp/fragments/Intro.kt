@@ -34,40 +34,27 @@ import java.io.IOException
 
 class Intro: Fragment() {
     private val PICK_IMAGE_REQUEST = 1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            try {
-
-            } catch (e: Exception){}
-        }
-    }
+    private val baos = ByteArrayOutputStream()
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.introduce_yourself, container, false)
         val nick = view.findViewById<EditText>(R.id.enterNameText)
         val todo = view.findViewById<EditText>(R.id.todoText)
         val imgView = view.findViewById<ImageView>(R.id.imageView)
-        val bitmap = (imgView.drawable as BitmapDrawable).bitmap
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val imageInByte: ByteArray = baos.toByteArray()
+
         view.findViewById<Button>(R.id.startButton).setOnClickListener {
             if(nick.text.toString().isEmpty() || todo.text.toString().isEmpty()){
                 val snack = Snackbar.make(it,"Fill all the information!",Snackbar.LENGTH_LONG)
                 snack.show()
                 return@setOnClickListener
             }
-            val user = User(nick = nick.text.toString(), todo = todo.text.toString(), avatar = imageInByte)
-            val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create()).build()
+
+            val user = User(nick = nick.text.toString(), todo = todo.text.toString(), avatar = baos.toByteArray())
+
+            val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build()
             val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
+
             clientService.authorizeClient(user).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                     if(response.isSuccessful) {
@@ -95,11 +82,7 @@ class Intro: Fragment() {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
             val uri: Uri = data.data
@@ -107,6 +90,7 @@ class Intro: Fragment() {
                 val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
                 val imageView: ImageView = activity?.findViewById(R.id.imageView) !!
                 imageView.setImageBitmap(bitmap)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
