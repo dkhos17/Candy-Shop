@@ -30,5 +30,9 @@
     <fragment
         android:id="@+id/chat"
         android:name="com.example.clientapp.fragments.Chat"
-        android:label="Chat" />
+        android:label="Chat" >
+        <action
+            android:id="@+id/action_chat_to_messageFragment2"
+            app:destination="@id/messageFragment" />
+    </fragment>
 </navigation>

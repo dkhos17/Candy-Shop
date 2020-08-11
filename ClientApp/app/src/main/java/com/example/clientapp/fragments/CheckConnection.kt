@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.clientapp.R
+import com.example.clientapp.baseUrl
 import com.example.clientapp.network.Client
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,7 +28,7 @@ class CheckConnection: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.checking_connection, container, false)
-        val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
+        val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create()).build()
         val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 

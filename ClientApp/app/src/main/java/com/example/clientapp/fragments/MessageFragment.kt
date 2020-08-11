@@ -1,7 +1,6 @@
 package com.example.clientapp.fragments
 
 import android.content.Context
-import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,15 +14,17 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.baseUrl
 import com.example.clientapp.models.Person
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
 import com.example.clientapp.recycler.MessageRecyclerViewAdapter
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.log
+import kotlin.concurrent.fixedRateTimer
 
 
 class MessageFragment : Fragment(){
@@ -31,10 +32,9 @@ class MessageFragment : Fragment(){
     lateinit var recycler: RecyclerView
     lateinit var user :User
     var list = listOf<Person>()
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
+    val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create()).build()
+    val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,34 +49,36 @@ class MessageFragment : Fragment(){
         recycler.layoutManager = LinearLayoutManager(context)
 
         val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
-        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry)
+        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user)
 
 
-        val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
-        Log.d("shemo", user.toString())
-        clientService.getHistory(user).enqueue(object : Callback<List<Person>> {
-            override fun onResponse(call: Call<List<Person>>, response: retrofit2.Response<List<Person>>) {
-                if(response.isSuccessful) {
-                    response.body()?.let {
-                        Log.d("response", it.toString())
-                        list = it
-                        (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter { person -> person.messages.isNotEmpty()} as MutableList<Person>)
+        fixedRateTimer("timer", false, 0L, 3000) {
+            clientService.getHistory(user).enqueue(object : Callback<List<Person>> {
+                override fun onResponse(
+                    call: Call<List<Person>>,
+                    response: Response<List<Person>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            if(list != it) {
+                                list = it
+                                (recycler.adapter as MessageRecyclerViewAdapter).setHistory(it.filter { person -> person.messages.isNotEmpty() && person.user.nick != user.nick } as MutableList<Person>)
+                            }
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<List<Person>>, t: Throwable) {
-                Log.d("connectserver", t.message!!)
-            }
-        })
+                override fun onFailure(call: Call<List<Person>>, t: Throwable) {
+                    Log.d("connectserver", t.message!!)
+                }
+            })
+        }
 
         val search = view.findViewById<SearchView>(R.id.search)
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 if(p0 != null && p0.length >= 3) {
-                    var new = list.filter{ it.user.nick.contains(p0, true) }
+                    var new = list.filter{ it.user.nick.contains(p0, true) && it.user.nick != user.nick}
                     (recycler.adapter as MessageRecyclerViewAdapter).setHistory(new as MutableList<Person>)
                 }
                 return false
@@ -84,7 +86,7 @@ class MessageFragment : Fragment(){
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 if (p0 != null && p0.isEmpty()) {
-                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(list.filter { it.messages.isNotEmpty()} as MutableList<Person>)
+                    (recycler.adapter as MessageRecyclerViewAdapter).setHistory(list.filter { it.messages.isNotEmpty() && it.user.nick != user.nick} as MutableList<Person>)
                 }
                 return onQueryTextSubmit(p0)
             }
@@ -107,7 +109,6 @@ class MessageFragment : Fragment(){
                 val position = viewHolder.adapterPosition
                 if (direction == ItemTouchHelper.RIGHT){
                     (recycler.adapter as MessageRecyclerViewAdapter).deleteItem(position)
-                    Log.d("swipeeeeeeeeeeeee","swipeeeeeeeeeee")
                 }
             }
 

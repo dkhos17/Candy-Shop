@@ -1,9 +1,6 @@
 package com.example.clientapp.recycler
 
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.opengl.Visibility
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +14,21 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.baseUrl
+import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
+import com.example.clientapp.models.User
+import com.example.clientapp.network.Client
 import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
+class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
     private var data: MutableList<Person>? = null
+    val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create()).build()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageRecyclerViewHolder {
         return MessageRecyclerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.viewholder, parent, false))
@@ -52,14 +59,27 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
         holder.nickname.text = data!![position].user.nick
         holder.itemView.setOnClickListener {
             val bndl = bundleOf("person" to data!![position])
+            bndl.putSerializable("me", user)
             navigation.navigate(R.id.action_messageFragment_to_chat, bndl)
         }
     }
 
     fun deleteItem(position: Int) {
         if(data == null) return
-        data!!.removeAt(position)
-        notifyItemRemoved(position)
+        val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
+        clientService.deleteMessages(Pair(user, data!![position].user)).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
+                if(response.isSuccessful) {
+                    data!!.removeAt(position)
+                    notifyItemRemoved(position)
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("connectserver", t.message!!)
+            }
+        })
+
     }
 
     fun setHistory(history: MutableList<Person>) {

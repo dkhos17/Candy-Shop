@@ -95,7 +95,9 @@ class MainActivity : AppCompatActivity() {
             mHttpServer!!.createContext("/check", connectionHandler)
             // Handle /messages endpoint
             mHttpServer!!.createContext("/messages", messageHandler)
+            mHttpServer!!.createContext("/chat", chatHandler)
             mHttpServer!!.createContext("/direct", directHandler)
+            mHttpServer!!.createContext("/delete", deleteHandler)
             mHttpServer!!.start()//startServer server;
             serverTextView.text = getString(R.string.server_running)
             serverButton.text = getString(R.string.stop_server)
@@ -119,8 +121,6 @@ class MainActivity : AppCompatActivity() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "POST" -> {
-                    Log.d("DB", database.getUserDao().getAllUsers().toString())
-
                     val ISR = InputStreamReader(exchange.requestBody, "utf-8")
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
                     val listType = object : TypeToken<User?>() {}.type
@@ -129,8 +129,6 @@ class MainActivity : AppCompatActivity() {
                     if (datUsr == null){
                         database.getUserDao().insertUser(usr)
                     }
-                    Log.d("DB", database.getUserDao().getAllUsers().toString())
-
                     sendResponse(exchange, "")
                 }
             }
@@ -170,6 +168,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val chatHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "POST" -> {
+                    val ISR = InputStreamReader(exchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<Pair<User, User>?>() {}.type
+                    val usr: Pair<User, User> = Gson().fromJson(jsonArray, listType)
+                    sendResponse(exchange, Gson().toJson(database.getUserDao().getMessages(usr.first.nick, usr.second.nick).sortedBy { it.id }))
+                }
+            }
+        }
+
+    }
+
     private val directHandler = HttpHandler { exchange ->
         run {
             // Get request method
@@ -177,9 +191,25 @@ class MainActivity : AppCompatActivity() {
                 "POST" -> {
                     val ISR = InputStreamReader(exchange.requestBody, "utf-8")
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
-                    val listType = object : TypeToken<User?>() {}.type
+                    val listType = object : TypeToken<Message?>() {}.type
                     val message: Message = Gson().fromJson(jsonArray, listType)
                     database.getUserDao().insertMessage(message)
+                    sendResponse(exchange, "")
+                }
+            }
+        }
+    }
+
+    private val deleteHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "POST" -> {
+                    val ISR = InputStreamReader(exchange.requestBody, "utf-8")
+                    val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
+                    val listType = object : TypeToken<Pair<User, User>?>() {}.type
+                    val usr: Pair<User, User> = Gson().fromJson(jsonArray, listType)
+                    database.getUserDao().deleteMessages(usr.first.nick, usr.second.nick)
                     sendResponse(exchange, "")
                 }
             }

@@ -8,7 +8,7 @@ data class User(
     val id: Int = 0,
     var nick: String,
     var todo: String,
-    var avatar: ByteArray?
+    var avatar: ByteArray
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -19,10 +19,7 @@ data class User(
         if (id != other.id) return false
         if (nick != other.nick) return false
         if (todo != other.todo) return false
-        if (avatar != null) {
-            if (other.avatar == null) return false
-            if (!avatar!!.contentEquals(other.avatar!!)) return false
-        } else if (other.avatar != null) return false
+        if (!avatar.contentEquals(other.avatar)) return false
 
         return true
     }
@@ -31,7 +28,7 @@ data class User(
         var result = id
         result = 31 * result + nick.hashCode()
         result = 31 * result + todo.hashCode()
-        result = 31 * result + (avatar?.contentHashCode() ?: 0)
+        result = 31 * result + avatar.contentHashCode()
         return result
     }
 }

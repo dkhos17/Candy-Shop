@@ -41,10 +41,7 @@ data class User(
 }
 
 
-@Entity(tableName = "messages", foreignKeys = [ForeignKey(entity = User::class,
-    parentColumns = ["id"],
-    childColumns = ["id"]
-)])
+@Entity(tableName = "messages")
 data class Message(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -74,7 +71,7 @@ interface UserDao {
     @Insert
     fun insertUser(us: User)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertMessage(ms: Message)
 
 }

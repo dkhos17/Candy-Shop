@@ -11,7 +11,7 @@ import com.example.clientapp.models.Person
 class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
-        if(person.messages?.get(position)?.from  == person.user.nick) {
+        if(person.messages?.get(position)?.from  != person.user.nick) {
             return 1
         }
         return 0
@@ -41,5 +41,10 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person
             (holder as ChatRecyclerRightViewHolder).message.text = person.messages!![position].message
             holder.time.text = person.messages!![position].time
         }
+    }
+
+    fun sendMessage(message: Message) {
+        person.messages.add(message)
+        notifyItemInserted(person.messages.size-1)
     }
 }

@@ -20,6 +20,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.clientapp.R
+import com.example.clientapp.baseUrl
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
 import com.google.android.material.snackbar.Snackbar
@@ -64,7 +65,7 @@ class Intro: Fragment() {
                 return@setOnClickListener
             }
             val user = User(nick = nick.text.toString(), todo = todo.text.toString(), avatar = imageInByte)
-            val clientRetrofit = Retrofit.Builder().baseUrl("http://localhost:5000/")
+            val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create()).build()
             val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
             clientService.authorizeClient(user).enqueue(object : Callback<Void> {

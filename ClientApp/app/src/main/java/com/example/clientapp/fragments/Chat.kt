@@ -1,35 +1,52 @@
 package com.example.clientapp.fragments
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
+import com.example.clientapp.baseUrl
 import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
 import com.example.clientapp.models.User
+import com.example.clientapp.network.Client
 import com.example.clientapp.recycler.ChatRecyclerViewAdapter
+import com.example.clientapp.recycler.MessageRecyclerViewAdapter
 import com.google.android.material.appbar.AppBarLayout
+import de.hdodenhof.circleimageview.CircleImageView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.concurrent.fixedRateTimer
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
 class Chat:Fragment() {
 
-    private lateinit var ivUserAvatar: ImageView
+    private lateinit var ivUserAvatar: CircleImageView
     private var EXPAND_AVATAR_SIZE: Float = 0F
     private var COLLAPSE_IMAGE_SIZE: Float = 0F
     private var horizontalToolbarAvatarMargin: Float = 0F
@@ -41,6 +58,9 @@ class Chat:Fragment() {
     private lateinit var titleToolbarTextSingle: AppCompatTextView
     private lateinit var titleToolbarTextSingle2: AppCompatTextView
     private lateinit var invisibleTextViewWorkAround: AppCompatTextView
+    private lateinit var backButton: AppCompatButton
+    private lateinit var sendButton: Button
+    private lateinit var mess: EditText
     private lateinit var background: FrameLayout
     /**/
     private var avatarAnimateStartPointY: Float = 0F
@@ -48,6 +68,7 @@ class Chat:Fragment() {
     private var isCalculated = false
     private var verticalToolbarAvatarMargin =0F
     private lateinit var person : Person
+    private lateinit var user: User
     private lateinit var whatido: AppCompatTextView
 
     override fun onAttach(context: Context) {
@@ -59,6 +80,7 @@ class Chat:Fragment() {
         if (savedInstanceState == null) {
             try {
                 person = requireArguments().getSerializable("person") as Person
+                user = requireArguments().getSerializable("me") as User
             } catch (e: Exception){}
         }
     }
@@ -84,12 +106,16 @@ class Chat:Fragment() {
         titleToolbarTextSingle2 = view.findViewById(R.id.collapsed_chat_detail2)
         background = view.findViewById(R.id.fl_background)
         invisibleTextViewWorkAround = view.findViewById(R.id.chat_invisible)
-
+        backButton = view.findViewById(R.id.back)
+        sendButton = view.findViewById(R.id.sendButton)
+        mess = view.findViewById(R.id.messageText)
         titleToolbarText.text = person.user.nick
         titleToolbarText2.text = person.user.todo
 
         titleToolbarTextSingle.text = person.user.nick
         titleToolbarTextSingle2.text = person.user.todo
+
+        ivUserAvatar.setImageBitmap(BitmapFactory.decodeByteArray(person.user.avatar, 0, person.user.avatar.size))
 
         (toolbar.height - COLLAPSE_IMAGE_SIZE) * 2
         /**/
@@ -111,40 +137,47 @@ class Chat:Fragment() {
         layout.stackFromEnd = true
         recycler.layoutManager = layout
 
-        var list: MutableList<Message> = listOf<Message>().toMutableList()
-        list.add(Message(0, "xose", "pertaxa", "synacksynasynacksynacksynacksynacksynacksynacksynacksynacksynackcksynacksynack", "12:00"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:01"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:02"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:03"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:04"))
-
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:05"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:06"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:07"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:08"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:09"))
-
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:20"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:21"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:22"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:32"))
-
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:45"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:54"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:34"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:32"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:24"))
-
-        list.add(Message(0, "xose", "pertaxa", "synack", "11:00"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "11:10"))
-        list.add(Message(0, "xose", "pertaxa", "synack", "12:30"))
-        list.add(Message(0, "pertaxa", "xose", "synack", "12:40"))
-        list.add(Message(0, "xose", "pertaxa", "bolo", "12:50"))
-
-        person = Person(User(nick = "xose", avatar = null, todo = "hm"), list)
         recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
+        val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+        val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
+        backButton.setOnClickListener {
+            findNavController().navigate(R.id.action_chat_to_messageFragment2, bundleOf("user" to user))
+        }
+
+        fixedRateTimer("timer", false, 0L, 3000) {
+            clientService.getMessages(Pair(user, person.user)).enqueue(object : Callback<List<Message>> {
+                override fun onResponse(call: Call<List<Message>>, response: retrofit2.Response<List<Message>>) {
+                    if(response.isSuccessful) {
+                        response.body()?.let {
+                            person.messages = it as MutableList<Message>
+                            recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
+                        }
+                    }
+                }
+                override fun onFailure(call: Call<List<Message>>, t: Throwable) {
+                    Log.d("connectserver", t.message!!)
+                }
+            })
+        }
+
+        sendButton.setOnClickListener {
+            val mesigi = Message(from = user.nick, to = person.user.nick, message = mess.text.toString(), time = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("hh:mm a")))
+            clientService.sendMessage(mesigi).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
+                    if(response.isSuccessful) {
+                        Log.d("igzavnebaaa","aeee")
+                        (recycler.adapter as ChatRecyclerViewAdapter).sendMessage(mesigi)
+                    }
+                }
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.d("connectserver", t.message!!)
+                }
+            })
+            mess.text.clear()
+        }
         return view
     }
 
