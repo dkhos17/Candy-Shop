@@ -14,7 +14,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatRecyclerViewAdapter (val navigation: NavController, var person: Person) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         if(person.messages?.get(position)?.from  != person.user.nick) {
@@ -32,15 +32,11 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person
     }
 
     override fun getItemCount(): Int {
-        if(person.messages == null)
-            return 0
-        return person.messages!!.size
+        return person.messages.size
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(person.messages == null) return
-
         if(getItemViewType(position) == 0) {
             (holder as ChatRecyclerLeftViewHolder).message.text = person.messages!![position].message
             holder.time.text = person.messages!![position].date.toInstant().atZone(ZoneId.systemDefault())
@@ -56,4 +52,10 @@ class ChatRecyclerViewAdapter (val navigation: NavController, val person: Person
         person.messages.add(message)
         notifyItemInserted(person.messages.size-1)
     }
+
+    fun setMessages(p: Person) {
+        person.messages = p.messages
+        notifyDataSetChanged()
+    }
+
 }

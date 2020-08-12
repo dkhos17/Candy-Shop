@@ -1,5 +1,7 @@
 package com.example.clientapp.fragments
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -59,15 +62,18 @@ class MessageFragment : Fragment() {
 
         val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
         recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user)
+        (recycler.adapter as MessageRecyclerViewAdapter).unpinSearch()
         (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
-
 
         val search = view.findViewById<SearchView>(R.id.search)
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 Log.d(p0.toString(),"search")
-                if(p0 != null && p0.length >= 3) {
-                    clientService.searchUser(Pair(p0!!, user.nick)).enqueue(object : Callback<List<Person>> {
+                if (p0 == null ) return false
+                (recycler.adapter as MessageRecyclerViewAdapter).pinSearch()
+
+                if(p0.length >= 3) {
+                    clientService.searchUser(Pair(p0, user.nick)).enqueue(object : Callback<List<Person>> {
                         override fun onResponse(call: Call<List<Person>>, response: Response<List<Person>>) {
                             if (response.isSuccessful) {
                                 Log.d("load", "search")
@@ -80,18 +86,17 @@ class MessageFragment : Fragment() {
                         override fun onFailure(call: Call<List<Person>>, t: Throwable) {}
                     })
                 }
-                return false
+                return true
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 Log.d(p0.toString(),"search")
 
-                if (p0 != null && p0.isEmpty()) {
-                    (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
-                }
                 return onQueryTextSubmit(p0)
             }
         })
+
+        search.setOnCloseListener { onClose() }
 
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recycler)
@@ -99,6 +104,13 @@ class MessageFragment : Fragment() {
         return view
     }
 
+    fun onClose(): Boolean {
+        Log.d("close","search")
+        (recycler.adapter as MessageRecyclerViewAdapter).unpinSearch()
+        (recycler.adapter as MessageRecyclerViewAdapter).clearHistory()
+        (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
+        return true
+    }
 
 
     private var simpleCallback: ItemTouchHelper.SimpleCallback =

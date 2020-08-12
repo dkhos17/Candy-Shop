@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clientapp.R
 import com.example.clientapp.baseUrl
+import com.example.clientapp.models.Message
 import com.example.clientapp.models.Person
 import com.example.clientapp.models.User
 import com.example.clientapp.network.Client
@@ -24,6 +25,7 @@ import java.util.*
 
 class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
     private var data = mutableListOf<Person>()
+    private var search = false
 
     val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create()).build()
@@ -79,8 +81,10 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
     }
 
     fun setLazyHistory(position: Int) {
-        if(position+1 != data.size || data.size % 10 != 0)
+        if(search || position+1 != data.size || data.size % 10 != 0)
             return
+
+        Log.d("load -1", "lazydata")
         var lazyUser = user
         lazyUser.id = position
         clientService = clientRetrofit.create<Client>(Client::class.java)
@@ -105,6 +109,20 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
     fun setHistory(history: MutableList<Person>) {
         data = history
         notifyDataSetChanged()
+    }
+
+    fun clearHistory() {
+        data.clear()
+        notifyDataSetChanged()
+    }
+
+    fun pinSearch() {
+        search = true
+    }
+
+
+    fun unpinSearch() {
+        search = false
     }
 
     private fun getTimeDiff(date1: Date, date2: Date): String {

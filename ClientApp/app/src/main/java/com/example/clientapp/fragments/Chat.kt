@@ -142,7 +142,7 @@ class Chat:Fragment() {
         val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
         backButton.setOnClickListener {
-            findNavController().navigate(R.id.action_chat_to_messageFragment2, bundleOf("user" to user))
+            findNavController().navigate(R.id.messageFragment, bundleOf("user" to user))
         }
 
         fixedRateTimer("timer", false, 0L, 3000) {
@@ -151,7 +151,7 @@ class Chat:Fragment() {
                     if(response.isSuccessful) {
                         response.body()?.let {
                             person.messages = it as MutableList<Message>
-                            recycler.adapter = ChatRecyclerViewAdapter(findNavController(), person)
+                            (recycler.adapter as ChatRecyclerViewAdapter).setMessages(person)
                         }
                     }
                 }
