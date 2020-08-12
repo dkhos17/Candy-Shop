@@ -81,8 +81,8 @@ interface UserDao {
     @Query("select * from users where nick like :nickname")
     fun searchUser(nickname: String): List<User>
 
-    @Query("select * from users limit 10 offset :offset")
-    fun getLimitUsers(offset: Int): List<User>
+    @Query("select u.id,u.nick,u.todo,u.avatar  from users as u join messages as m on m.`from` = :nick or m.`to` = :nick limit 10 offset :offset")
+    fun getLimitUsers(nick: String, offset: Int): List<User>
 
     @Query("select * from messages where `from` = :key")
     fun getAllMessages(key: String): List<Message>

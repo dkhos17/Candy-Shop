@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
                     val jsonArray = BufferedReader(ISR).use(BufferedReader::readText)
                     val listType = object : TypeToken<User?>() {}.type
                     val usr: User = Gson().fromJson(jsonArray, listType)
-                    val users = database.getUserDao().getLimitUsers(usr.id)
+                    val users = database.getUserDao().getLimitUsers(usr.nick, usr.id)
                     for (user in users){
                         val temp = database.getUserDao().getMessages(user.nick!!, usr.nick)
                         persons.add(Person(user, temp))

@@ -58,7 +58,7 @@ class MessageFragment : Fragment() {
         colorDrawableBackground = ColorDrawable(Color.parseColor("#FFE91E63"))
 
         val emptyHisotry = view.findViewById<TextView>(R.id.empty_history)
-        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user, clientService)
+        recycler.adapter = MessageRecyclerViewAdapter(findNavController(), emptyHisotry, user)
         (recycler.adapter as MessageRecyclerViewAdapter).setLazyHistory(-1)
 
 
@@ -66,7 +66,7 @@ class MessageFragment : Fragment() {
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 Log.d(p0.toString(),"search")
-                if(p0 != null) {
+                if(p0 != null && p0.length >= 3) {
                     clientService.searchUser(Pair(p0!!, user.nick)).enqueue(object : Callback<List<Person>> {
                         override fun onResponse(call: Call<List<Person>>, response: Response<List<Person>>) {
                             if (response.isSuccessful) {

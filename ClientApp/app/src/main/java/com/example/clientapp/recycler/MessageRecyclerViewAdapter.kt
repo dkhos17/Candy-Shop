@@ -22,11 +22,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
-class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User, val clientService: Client) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
+class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory: TextView, val user: User) : RecyclerView.Adapter<MessageRecyclerViewHolder>() {
     private var data = mutableListOf<Person>()
 
     val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create()).build()
+    lateinit var clientService: Client
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageRecyclerViewHolder {
         return MessageRecyclerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.viewholder, parent, false))
@@ -60,12 +61,12 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
 
 
     fun deleteItem(position: Int) {
-        if(data == null) return
-        val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
-        clientService.deleteMessages(Pair(user, data!![position].user)).enqueue(object : Callback<Void> {
+        Log.d("deeeel", position.toString())
+        clientService = clientRetrofit.create<Client>(Client::class.java)
+        clientService.deleteMessages(Pair(user, data[position].user)).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                 if(response.isSuccessful) {
-                    data!!.removeAt(position)
+                    data.removeAt(position)
                     notifyItemRemoved(position)
                 }
             }
@@ -80,16 +81,18 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
     fun setLazyHistory(position: Int) {
         if(position+1 != data.size || data.size % 10 != 0)
             return
-
         var lazyUser = user
         lazyUser.id = position
+        clientService = clientRetrofit.create<Client>(Client::class.java)
         clientService.getLazyHistory(user).enqueue(object : Callback<List<Person>> {
             override fun onResponse(call: Call<List<Person>>, response: Response<List<Person>>) {
                 if (response.isSuccessful) {
                     Log.d("load", "lazydata")
                     response.body()?.let {
-                        if(position == -1) data = (it as MutableList<Person>)
-                        else data.addAll(it as MutableList<Person>)
+                        if(position == -1) data = (it.filter { iter -> iter.user.nick != user.nick } as MutableList<Person>)
+                        else data.addAll(it.filter { iter -> iter.user.nick != user.nick }  as MutableList<Person>)
+                        if (data.isNotEmpty()) data = data.distinct() as MutableList<Person>
+                        data = data.filter { iter -> iter.messages.isNotEmpty() } as MutableList<Person>
                         notifyDataSetChanged()
                     }
                 }
@@ -110,14 +113,8 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
         val minutes = seconds / 60
         val hours = minutes / 60
         val days = hours / 24
-        var res = ""
-        if(hours < 10) res += "0"
-        res += hours.toString()
-        res += ":"
-        if(minutes < 10) res += "0"
-        res += minutes.toString()
-
-        return res
+        if(hours > 0) return "$hours hours"
+        return "$minutes min"
     }
 
 }
