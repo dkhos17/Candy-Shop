@@ -69,7 +69,8 @@ class MessageRecyclerViewAdapter(val navigation: NavController, val emptyHistory
             override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
                 if(response.isSuccessful) {
                     data.removeAt(position)
-                    notifyItemRemoved(position)
+                    notifyDataSetChanged()
+//                    notifyItemRemoved(position)
                 }
             }
 

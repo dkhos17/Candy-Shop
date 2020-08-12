@@ -40,7 +40,6 @@ class MessageFragment : Fragment() {
     lateinit var deleteIcon: Drawable
     lateinit var colorDrawableBackground: ColorDrawable
 
-    var list = listOf<Person>()
     val clientRetrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build()
     val clientService: Client = clientRetrofit.create<Client>(Client::class.java)
 
